@@ -1,0 +1,289 @@
+{
+  "classes": [
+    "butter",
+    "carrot",
+    "cheese",
+    "chicken",
+    "eggs",
+    "fish",
+    "garlic",
+    "lemon",
+    "milk",
+    "onion",
+    "potato",
+    "tomato"
+  ],
+  "ablation": {
+    "Raw RGB (3072)": {
+      "n_features": 3072,
+      "accuracy": 0.6714,
+      "f1_macro": 0.667,
+      "train_s": 8.383,
+      "pred_s": 4.544
+    },
+    "Gray+Blur (4096)": {
+      "n_features": 4096,
+      "accuracy": 0.4262,
+      "f1_macro": 0.4132,
+      "train_s": 17.045,
+      "pred_s": 6.467
+    },
+    "HOG (1764)": {
+      "n_features": 1764,
+      "accuracy": 0.5226,
+      "f1_macro": 0.5273,
+      "train_s": 3.952,
+      "pred_s": 2.892
+    },
+    "HOG + HSV Color (1860)": {
+      "n_features": 1860,
+      "accuracy": 0.6179,
+      "f1_macro": 0.6223,
+      "train_s": 4.458,
+      "pred_s": 2.953
+    }
+  },
+  "cv_comparison": [
+    {
+      "model": "kNN (k=5)",
+      "accuracy_mean": 0.4231,
+      "accuracy_std": 0.0108,
+      "precision_macro": 0.5165,
+      "recall_macro": 0.4231,
+      "f1_macro": 0.4035,
+      "train_time_s": 0.066,
+      "pred_time_s": 0.1026
+    },
+    {
+      "model": "Decision Tree",
+      "accuracy_mean": 0.4233,
+      "accuracy_std": 0.0202,
+      "precision_macro": 0.429,
+      "recall_macro": 0.4233,
+      "f1_macro": 0.4243,
+      "train_time_s": 4.753,
+      "pred_time_s": 0.0063
+    },
+    {
+      "model": "Gaussian Naive Bayes",
+      "accuracy_mean": 0.4581,
+      "accuracy_std": 0.0187,
+      "precision_macro": 0.4957,
+      "recall_macro": 0.4581,
+      "f1_macro": 0.4319,
+      "train_time_s": 0.088,
+      "pred_time_s": 0.0618
+    },
+    {
+      "model": "RBF SVM",
+      "accuracy_mean": 0.636,
+      "accuracy_std": 0.0102,
+      "precision_macro": 0.66,
+      "recall_macro": 0.636,
+      "f1_macro": 0.6403,
+      "train_time_s": 3.691,
+      "pred_time_s": 3.0021
+    },
+    {
+      "model": "Neural Net (MLP)",
+      "accuracy_mean": 0.62,
+      "accuracy_std": 0.0095,
+      "precision_macro": 0.6208,
+      "recall_macro": 0.62,
+      "f1_macro": 0.6186,
+      "train_time_s": 3.038,
+      "pred_time_s": 0.0077
+    },
+    {
+      "model": "Random Forest (Bagging)",
+      "accuracy_mean": 0.675,
+      "accuracy_std": 0.01,
+      "precision_macro": 0.6754,
+      "recall_macro": 0.675,
+      "f1_macro": 0.6684,
+      "train_time_s": 1.63,
+      "pred_time_s": 0.0527
+    },
+    {
+      "model": "HistGradientBoosting",
+      "accuracy_mean": 0.729,
+      "accuracy_std": 0.013,
+      "precision_macro": 0.733,
+      "recall_macro": 0.729,
+      "f1_macro": 0.7279,
+      "train_time_s": 61.326,
+      "pred_time_s": 0.0391
+    }
+  ],
+  "best_model": "HistGradientBoosting",
+  "confusion_matrix": [
+    [
+      67,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      1,
+      0
+    ],
+    [
+      0,
+      62,
+      0,
+      0,
+      0,
+      3,
+      0,
+      2,
+      0,
+      1,
+      1,
+      1
+    ],
+    [
+      2,
+      3,
+      41,
+      0,
+      1,
+      5,
+      4,
+      5,
+      5,
+      1,
+      3,
+      0
+    ],
+    [
+      0,
+      1,
+      5,
+      35,
+      0,
+      11,
+      9,
+      1,
+      0,
+      4,
+      3,
+      1
+    ],
+    [
+      1,
+      0,
+      2,
+      0,
+      58,
+      0,
+      3,
+      0,
+      3,
+      1,
+      2,
+      0
+    ],
+    [
+      0,
+      5,
+      3,
+      4,
+      0,
+      45,
+      3,
+      1,
+      1,
+      3,
+      0,
+      5
+    ],
+    [
+      0,
+      0,
+      2,
+      4,
+      0,
+      6,
+      49,
+      1,
+      4,
+      1,
+      3,
+      0
+    ],
+    [
+      0,
+      1,
+      4,
+      0,
+      0,
+      0,
+      1,
+      59,
+      2,
+      1,
+      1,
+      1
+    ],
+    [
+      0,
+      1,
+      4,
+      0,
+      0,
+      0,
+      3,
+      0,
+      60,
+      2,
+      0,
+      0
+    ],
+    [
+      2,
+      2,
+      4,
+      1,
+      0,
+      5,
+      3,
+      3,
+      2,
+      45,
+      2,
+      1
+    ],
+    [
+      0,
+      2,
+      1,
+      1,
+      0,
+      3,
+      1,
+      1,
+      0,
+      11,
+      49,
+      1
+    ],
+    [
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      5,
+      0,
+      1,
+      0,
+      63
+    ]
+  ]
+}

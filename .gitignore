@@ -1,0 +1,29 @@
+﻿# Entornos virtuales Python
+.venv/
+venv/
+env/
+
+# Archivos temporales Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Configuracion privada
+.env
+.env.*
+!.env.example
+
+# Dependencias frontend
+node_modules/
+
+# Archivos generados
+dist/
+build/
+*.log
+
+# Dataset comprimido de gran tamaño
+fridge dataset.v1i.yolov8.zip
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db

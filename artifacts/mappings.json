@@ -1,0 +1,40 @@
+{
+  "yolo_to_es": {
+    "apple": "manzana",
+    "banana": "platano",
+    "beans": "alubia",
+    "beef": "ternera",
+    "bread": "pan",
+    "butter": "mantequilla",
+    "cabbage": "col",
+    "carrot": "zanahoria",
+    "cheese": "queso",
+    "chicken": "pollo",
+    "chickpea": "garbanzo",
+    "cucumber": "pepino",
+    "eggplant": "berenjena",
+    "eggs": "huevo",
+    "fish": "pescado",
+    "garlic": "ajo",
+    "lemon": "limon",
+    "lentil": "lenteja",
+    "lettuce": "lechuga",
+    "milk": "leche",
+    "onion": "cebolla",
+    "orange": "naranja",
+    "potato": "patata",
+    "rice": "arroz",
+    "spinach": "espinaca",
+    "tomato": "tomate",
+    "yogurt": "yogur"
+  },
+  "pantry_basics": [
+    "sal",
+    "aceite",
+    "agua",
+    "azucar",
+    "pimienta",
+    "harina",
+    "vinagre"
+  ]
+}

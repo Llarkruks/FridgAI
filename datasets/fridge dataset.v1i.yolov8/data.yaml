@@ -1,0 +1,13 @@
+train: ../train/images
+val: ../valid/images
+test: ../test/images
+
+nc: 31
+names: ['apple', 'banana', 'beans', 'beef', 'bread', 'bulgur', 'butter', 'cabbage', 'carrot', 'cheese', 'chicken', 'chickpea', 'cucumber', 'date', 'eggplant', 'eggs', 'fish', 'garlic', 'lamb', 'lemon', 'lentil', 'lettuce', 'milk', 'okra', 'onion', 'orange', 'potato', 'rice', 'spinach', 'tomato', 'yogurt']
+
+roboflow:
+  workspace: practicum-ziryz
+  project: fridge-dataset-oi7ld
+  version: 1
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/practicum-ziryz/fridge-dataset-oi7ld/dataset/1

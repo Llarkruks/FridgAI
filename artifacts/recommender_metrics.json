@@ -1,0 +1,43 @@
+{
+  "funnel": {
+    "raw": 12641,
+    "non_null": 12412,
+    "culinary": 11850,
+    "unique_titles": 11842,
+    "final_recipes": 10713
+  },
+  "vocab_size": 57,
+  "avg_latency_ms": 2.94,
+  "top_tfidf_terms": {
+    "huevo": 0.11757,
+    "cebolla": 0.11016,
+    "ajo": 0.10162,
+    "leche": 0.10025,
+    "mantequilla": 0.08804,
+    "tomate": 0.08012,
+    "queso": 0.07816,
+    "pollo": 0.06475,
+    "limon": 0.06433,
+    "perejil": 0.0573,
+    "vino": 0.05436,
+    "patata": 0.05336,
+    "levadura": 0.05289,
+    "nata": 0.05229,
+    "pimiento": 0.05026,
+    "pescado": 0.04542,
+    "ternera": 0.04536,
+    "caldo": 0.04449,
+    "almendra": 0.0432,
+    "zanahoria": 0.04257,
+    "pasta": 0.04244,
+    "cerdo": 0.04175,
+    "pan": 0.04064,
+    "chocolate": 0.03446,
+    "canela": 0.02934,
+    "naranja": 0.02843,
+    "champinon": 0.02654,
+    "arroz": 0.02612,
+    "gamba": 0.02587,
+    "jamon": 0.02534
+  }
+}
