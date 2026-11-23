@@ -182,6 +182,24 @@ La aplicación estará disponible en:
 
 > ⚠️ Es necesario mantener ambos servidores ejecutándose para utilizar las funcionalidades que dependen del backend.
 
+### 7. Versión React/Vite del frontend
+
+El proyecto también incluye una interfaz moderna desarrollada con React y Vite en `frontend-react/`.
+
+Desde una nueva terminal, instala las dependencias y inicia el servidor:
+
+```powershell
+cd frontend-react
+npm install
+npm run dev
+```
+
+El frontend React estará disponible en:
+
+**http://127.0.0.1:5173**
+
+FastAPI debe seguir ejecutándose en el puerto `8000`.
+
 ## 🧠 Modelo de inteligencia artificial
 
 FridgIA incorpora un modelo **YOLOv8n** para el reconocimiento visual de ingredientes.
