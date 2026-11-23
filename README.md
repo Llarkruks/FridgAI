@@ -9,6 +9,8 @@
 ![Python](https://img.shields.io/badge/Python-3.12-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![YOLOv8](https://img.shields.io/badge/YOLO-v8-00FFFF?style=for-the-badge)
 ![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)
+![React](https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=0B2A3B)
+![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)
 ![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)
 ![Git LFS](https://img.shields.io/badge/Git-LFS-F05032?style=for-the-badge&logo=git&logoColor=white)
 
@@ -24,17 +26,17 @@
 
 A través de una interfaz web, permite reconocer ingredientes mediante imágenes, gestionar los alimentos disponibles y consultar recetas.
 
-La aplicación combina un modelo **YOLOv8n**, un backend desarrollado con **FastAPI** y un frontend interactivo construido con **Streamlit**.
+La aplicación combina un modelo **YOLOv8n**, un backend desarrollado con **FastAPI** y un frontend moderno construido con **React y Vite**. También se conserva una interfaz alternativa desarrollada con **Streamlit**.
 
 ## ✨ Funcionalidades principales
 
 | Módulo | Descripción |
 |---|---|
-| 📸 Escáner Visual | Reconocimiento de ingredientes mediante YOLOv8 |
-| 🥬 Mi Nevera | Gestión de los ingredientes disponibles |
-| 🍽️ Recetas y Favoritos | Exploración de recetas y gestión de favoritos |
-| 📊 Dashboard ML | Visualización de resultados relacionados con los modelos de aprendizaje automático |
-| 🔐 Usuarios | Registro e inicio de sesión |
+| 📸 Escáner Visual | Reconocimiento con YOLOv8, subida de fotos, cámara web y visualización de bounding boxes |
+| 🥬 Mi Nevera | Inventario visual con cantidades, origen del ingrediente y búsqueda |
+| 🍽️ Recetas y Favoritos | Recomendaciones reales, compatibilidad, filtros, detalles y recetas guardadas |
+| 📊 Dashboard ML | KPIs reales, comparativa de modelos, métricas YOLO y visualización del corpus |
+| 🔐 Usuarios | Registro, inicio de sesión y cierre de sesión |
 | 🔗 API REST | Comunicación entre frontend y backend mediante FastAPI |
 
 ## 🛠️ Tecnologías utilizadas
@@ -42,7 +44,10 @@ La aplicación combina un modelo **YOLOv8n**, un backend desarrollado con **Fast
 | Categoría | Tecnologías |
 |---|---|
 | Lenguaje | Python 3.12 |
-| Frontend | Streamlit, Plotly |
+| Frontend principal | React, Vite, JavaScript |
+| UI React | Lucide React, Framer Motion, Recharts |
+| Frontend alternativo | Streamlit, Plotly |
+| Node.js | Node.js y npm |
 | Backend | FastAPI, Uvicorn |
 | Visión artificial | YOLOv8n, Ultralytics, OpenCV |
 | Machine Learning | scikit-learn, scikit-image |
@@ -54,8 +59,10 @@ La aplicación combina un modelo **YOLOv8n**, un backend desarrollado con **Fast
 
 ```mermaid
 flowchart TD
-    U["👤 Usuario"] --> F["🖥️ Frontend - Streamlit"]
+    U["👤 Usuario"] --> F["🖥️ Frontend - React/Vite"]
+    U -.-> S["Alternativa - Streamlit"]
     F -->|HTTP / REST| B["⚙️ Backend - FastAPI"]
+    S -->|HTTP / REST| B
     B --> D[("🗄️ Base de datos SQLite")]
     B --> Y["📸 Modelo YOLOv8"]
     B --> R["🍽️ Motor de recetas"]
@@ -64,8 +71,8 @@ flowchart TD
 
 **Funcionamiento general:**
 
-1. El usuario interactúa con la aplicación Streamlit.
-2. El frontend realiza solicitudes HTTP al backend.
+1. El usuario interactúa con la interfaz React/Vite o con Streamlit.
+2. El frontend realiza solicitudes HTTP al backend FastAPI.
 3. FastAPI procesa las peticiones y utiliza los componentes necesarios.
 4. La aplicación devuelve los resultados al usuario.
 
@@ -80,6 +87,13 @@ FridgIA/
 ├── datasets/           # Dataset de imágenes y etiquetas YOLO
 ├── frontend/
 │   └── app.py          # Interfaz web Streamlit
+├── frontend-react/
+│   ├── src/
+│   │   ├── App.jsx     # Aplicación React principal
+│   │   ├── main.jsx    # Punto de entrada React
+│   │   └── styles.css  # Sistema visual personalizado
+│   ├── index.html
+│   └── package.json
 ├── ml/                 # Código de Machine Learning
 ├── yolo_entrega/       # Archivos de entrega de YOLO
 │
