@@ -1,4 +1,4 @@
-# 🧊 FridgIA
+# 🧊 FridgAI
 
 <div align="center">
 
