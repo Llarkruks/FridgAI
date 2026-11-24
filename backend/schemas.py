@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, Optional
+from typing import List, Optional, Literal
 from pydantic import BaseModel, ConfigDict, Field
 
 
@@ -98,3 +98,36 @@ class FavoriteResponse(BaseModel):
     dish_title: str
     notes: str
     saved_at: datetime
+
+# -------------------- CHATBOT --------------------
+
+class ChatMessage(BaseModel):
+
+    role: Literal["user", "assistant"]
+
+    content: str = Field(
+        ...,
+        min_length=1,
+        max_length=6000
+    )
+
+
+class ChatRequest(BaseModel):
+
+    messages: List[ChatMessage] = Field(
+        ...,
+        min_length=1,
+        max_length=20
+    )
+
+
+class ChatResponse(BaseModel):
+
+    answer: str
+    model: str
+    response_time: float = Field(
+        ...,
+        ge=0
+    )
+    ingredients_used: List[str]
+    recipes_used: List[str]

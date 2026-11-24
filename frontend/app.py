@@ -18,6 +18,8 @@ if "token" not in st.session_state:
     st.session_state.token = None
 if "username" not in st.session_state:
     st.session_state.username = None
+if "chat_messages" not in st.session_state:
+    st.session_state.chat_messages = []
 
 
 def auth_headers() -> dict:
@@ -29,7 +31,8 @@ def api_request(method: str, path: str, **kwargs):
     headers = kwargs.pop("headers", {})
     headers.update(auth_headers())
     try:
-        resp = requests.request(method, url, headers=headers, timeout=30, **kwargs)
+        timeout = kwargs.pop("timeout", 30)
+        resp = requests.request(method, url, headers=headers, timeout=timeout, **kwargs)
         return resp
     except requests.RequestException as exc:
         st.error(f"Error de conexión con FastAPI ({url}): {exc}")
@@ -92,6 +95,9 @@ with st.sidebar:
         if st.button("Cerrar sesión", use_container_width=True):
             st.session_state.token = None
             st.session_state.username = None
+            st.session_state.chat_messages = []
+            st.session_state.pop("last_scan", None)
+            st.session_state.pop("last_recs", None)
             st.rerun()
 
     st.divider()
@@ -102,6 +108,7 @@ with st.sidebar:
             "🥬 Mi Nevera",
             "🍳 Recetas y Favoritos",
             "📊 Dashboard ML",
+            "🤖 Asistente de Cocina",
         ],
     )
 
@@ -359,3 +366,252 @@ elif page == "📊 Dashboard ML":
             }
         )
         st.plotly_chart(px.funnel(df_f, x="Recetas", y="Etapa"), use_container_width=True)
+
+
+
+# -------------------- PÁGINA 5: CHATBOT --------------------
+
+elif page == "🤖 Asistente de Cocina":
+
+    st.header("🤖 FridgIA Assistant")
+
+    st.caption(
+        "Tu asistente inteligente de cocina, "
+        "conectado con los ingredientes de tu nevera."
+    )
+
+    # Comprobar que el usuario ha iniciado sesión
+    if not st.session_state.token:
+
+        st.warning(
+            "Inicia sesión para utilizar el asistente."
+        )
+
+        st.stop()
+
+    # Obtener el inventario actual
+    inventory_response = api_request(
+        "GET",
+        "/fridge/items"
+    )
+
+    inventory = []
+
+    if (
+        inventory_response is not None
+        and inventory_response.status_code == 200
+    ):
+
+        inventory = inventory_response.json()
+
+    else:
+
+        st.error(
+            "No se ha podido consultar tu inventario."
+        )
+
+        st.stop()
+
+    # Mostrar los ingredientes disponibles
+    with st.expander(
+        "🥬 Ingredientes disponibles en tu nevera",
+        expanded=True
+    ):
+
+        if inventory:
+
+            ingredient_text = ", ".join(
+                f"{item['ingredient_es'].capitalize()} "
+                f"({item['quantity']})"
+                for item in inventory
+            )
+
+            st.write(ingredient_text)
+
+            st.metric(
+                "Ingredientes diferentes",
+                len(inventory)
+            )
+
+        else:
+
+            st.info(
+                "Tu nevera está vacía. Puedes añadir "
+                "ingredientes desde Mi Nevera."
+            )
+
+    # Botón para iniciar una nueva conversación
+    if st.button("🗑️ Nueva conversación"):
+
+        st.session_state.chat_messages = []
+
+        st.rerun()
+
+    st.divider()
+
+    # Mensaje inicial del asistente
+    if not st.session_state.chat_messages:
+
+        with st.chat_message("assistant"):
+
+            st.markdown(
+                "¡Hola! Soy **FridgIA Assistant**. "
+                "Puedo ayudarte a decidir qué cocinar "
+                "con los ingredientes que tienes disponibles."
+            )
+
+            st.markdown(
+                """
+                Puedes preguntarme:
+
+                - ¿Qué puedo cocinar hoy?
+                - ¿Qué ingredientes me faltan?
+                - ¿Cómo preparo una receta?
+                - ¿Qué puedo cocinar sin ir a comprar?
+                - ¿Cómo puedo aprovechar mis alimentos?
+                """
+            )
+
+    # Mostrar el historial de conversación
+    for message in st.session_state.chat_messages:
+
+        with st.chat_message(message["role"]):
+
+            st.markdown(message["content"])
+
+            if "response_time" in message:
+
+                st.caption(
+                    f"⏱️ Tiempo de respuesta: "
+                    f"{message['response_time']:.2f} s"
+                )
+
+            if message.get("recipes_used"):
+
+                with st.expander("📚 Recetas consultadas"):
+
+                    for recipe in message["recipes_used"]:
+
+                        st.write(f"- {recipe}")
+
+    # Entrada de mensajes del usuario
+    prompt = st.chat_input(
+        "Pregunta a tu asistente de cocina...",
+        max_chars=2000
+    )
+
+    if prompt:
+
+        user_message = {
+            "role": "user",
+            "content": prompt
+        }
+
+        with st.chat_message("user"):
+
+            st.markdown(prompt)
+
+        # Preparar historial para enviar al backend
+        conversation = (
+            st.session_state.chat_messages
+            + [user_message]
+        )
+
+        messages_to_send = [
+            {
+                "role": message["role"],
+                "content": message["content"][:6000]
+            }
+            for message in conversation[-10:]
+        ]
+
+        # Enviar petición a FastAPI
+        with st.chat_message("assistant"):
+
+            with st.spinner(
+                "Consultando tu nevera y buscando recetas..."
+            ):
+
+                response = api_request(
+                    "POST",
+                    "/assistant/chat",
+                    json={
+                        "messages": messages_to_send
+                    },
+                    timeout=210
+                )
+
+            if (
+                response is not None
+                and response.status_code == 200
+            ):
+
+                data = response.json()
+
+                answer = data["answer"]
+
+                response_time = data["response_time"]
+
+                recipes_used = data.get(
+                    "recipes_used",
+                    []
+                )
+
+                st.markdown(answer)
+
+                st.caption(
+                    f"⏱️ Tiempo de respuesta: "
+                    f"{response_time:.2f} s"
+                )
+
+                st.caption(
+                    f"Modelo utilizado: {data['model']}"
+                )
+
+                if recipes_used:
+
+                    with st.expander(
+                        "📚 Recetas consultadas"
+                    ):
+
+                        for recipe in recipes_used:
+
+                            st.write(f"- {recipe}")
+
+                # Guardar la conversación en la sesión
+                st.session_state.chat_messages.append(
+                    user_message
+                )
+
+                st.session_state.chat_messages.append({
+                    "role": "assistant",
+                    "content": answer,
+                    "response_time": response_time,
+                    "recipes_used": recipes_used
+                })
+
+            else:
+
+                error_message = (
+                    "No se ha podido obtener una respuesta."
+                )
+
+                if response is not None:
+
+                    try:
+
+                        error_message = response.json().get(
+                            "detail",
+                            error_message
+                        )
+
+                    except ValueError:
+
+                        pass
+
+                st.error(error_message)
+
+                st.info(
+                    "Comprueba que Ollama y FastAPI "
+                    "están ejecutándose correctamente."
+                )
