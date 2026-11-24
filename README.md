@@ -21,11 +21,11 @@ _Proyecto de Machine Learning y realidad aumentada aplicado a la gestión inteli
 
 </div>
 
-## 📖 ¿Qué es FridgIA?
+## 📖 ¿Qué es FridgAI?
 
-**FridgIA** es una aplicación que utiliza inteligencia artificial, visión por computador y aprendizaje automático para facilitar la gestión de alimentos, descubrir recetas y contribuir a reducir el desperdicio alimentario.
+**FridgAI** es una aplicación que utiliza inteligencia artificial, visión por computador y aprendizaje automático para facilitar la gestión de alimentos, descubrir recetas y contribuir a reducir el desperdicio alimentario.
 
-Permite reconocer ingredientes mediante imágenes, gestionar un inventario personal y recomendar recetas según los alimentos disponibles. La ampliación FridgIA Assistant incorpora un asistente conversacional contextualizado mediante Ollama y Llama 3.2.
+Permite reconocer ingredientes mediante imágenes, gestionar un inventario personal y recomendar recetas según los alimentos disponibles. La ampliación FridgAI Assistant incorpora un asistente conversacional contextualizado mediante Ollama y Llama 3.2.
 
 La aplicación combina YOLOv8n, un recomendador basado en TF-IDF y similitud coseno, un backend FastAPI y un frontend React/Vite. También conserva una interfaz Streamlit orientada a la interacción y al análisis de los modelos. La integración con Unity y Vuforia forma parte del alcance previsto del proyecto.
 
@@ -93,7 +93,7 @@ flowchart TD
 ## 📂 Estructura del proyecto
 
 ```text
-FridgIA/
+FridgAI/
 ├── artifacts/              # Modelos entrenados y métricas
 ├── backend/
 │   ├── main.py             # Endpoints FastAPI
@@ -126,7 +126,7 @@ La estructura incluye la ampliación propuesta del chatbot; los cambios deben in
 
 ## 🚀 Instalación y ejecución
 
-Instrucciones para Windows (PowerShell) y macOS (Terminal o Visual Studio Code). Ejecuta los comandos desde la raíz de FridgIA salvo cuando se indique lo contrario.
+Instrucciones para Windows (PowerShell) y macOS (Terminal o Visual Studio Code). Ejecuta los comandos desde la raíz de FridgAI salvo cuando se indique lo contrario.
 
 ### 1. Requisitos previos
 
@@ -161,8 +161,8 @@ brew install python@3.12 git-lfs
 
 ```powershell
 git lfs install
-git -c core.longpaths=true clone https://github.com/Llarkruks/FridgIA.git
-cd FridgIA
+git -c core.longpaths=true clone https://github.com/Llarkruks/FridgAI.git
+cd FridgAI
 git lfs pull
 ```
 
@@ -170,8 +170,8 @@ git lfs pull
 
 ```bash
 git lfs install
-git clone https://github.com/Llarkruks/FridgIA.git
-cd FridgIA
+git clone https://github.com/Llarkruks/FridgAI.git
+cd FridgAI
 git lfs pull
 ```
 
@@ -293,7 +293,7 @@ El chatbot de esta ampliación aún no está integrado en React.
 
 ### 8. Iniciar el frontend Streamlit
 
-Abre otra terminal situada en la raíz de FridgIA.
+Abre otra terminal situada en la raíz de FridgAI.
 
 **Windows:**
 
@@ -334,7 +334,7 @@ Cada servicio debe permanecer activo mientras se utilice.
 
 ### Reconocimiento visual
 
-FridgIA utiliza YOLOv8n para detectar varios ingredientes en una misma imagen, devolviendo clases, confianza y bounding boxes.
+FridgAI utiliza YOLOv8n para detectar varios ingredientes en una misma imagen, devolviendo clases, confianza y bounding boxes.
 
 La memoria documenta una comparativa previa de clasificadores clásicos mediante características visuales y validación cruzada:
 
@@ -380,11 +380,11 @@ El vocabulario canónico actual de 57 ingredientes limita la cobertura real: una
 
 Zenodo aparece entre las fuentes recomendadas en el enunciado docente. El uso de Roboflow debe confirmarse con la profesora si exige utilizar exclusivamente las fuentes enumeradas.
 
-## 🤖 FridgIA Assistant
+## 🤖 FridgAI Assistant
 
 El nuevo módulo permite consultar recetas mediante lenguaje natural. Se ha diseñado para reutilizar el recomendador existente, sin entrenar un nuevo modelo generativo.
 
-A diferencia de un chatbot convencional, FridgIA Assistant recibe información sobre los ingredientes almacenados en la nevera del usuario y las recetas recuperadas por el sistema de recomendación.
+A diferencia de un chatbot convencional, FridgAI Assistant recibe información sobre los ingredientes almacenados en la nevera del usuario y las recetas recuperadas por el sistema de recomendación.
 
 ### Funcionamiento
 
@@ -646,7 +646,7 @@ Comprueba que Ollama está funcionando correctamente y revisa los tiempos de esp
 
 <div align="center">
 
-### 🧊 FridgIA
+### 🧊 FridgAI
 
 **Inteligencia artificial aplicada a una nevera más inteligente.**
 
