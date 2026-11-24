@@ -7,6 +7,8 @@ from fastapi.security import OAuth2PasswordRequestForm
 from backend.auth import create_access_token, get_current_user, hash_password, verify_password
 from backend.database import get_db, init_db
 from backend.ml_engine import ml_engine
+from backend.assistant import generate_chat_response
+from backend.schemas import ChatRequest, ChatResponse
 from backend.schemas import (
     FavoriteCreate,
     FavoriteResponse,
@@ -354,3 +356,107 @@ def list_recent_scans(
         }
         for r in rows
     ]
+
+
+# -------------------- ASISTENTE DE COCINA --------------------
+
+@app.post("/assistant/chat", response_model=ChatResponse)
+def assistant_chat(
+    req: ChatRequest,
+    current_user: dict = Depends(get_current_user)
+):
+
+    if req.messages[-1].role != "user":
+        raise HTTPException(
+            status_code=400,
+            detail="El último mensaje debe ser del usuario."
+        )
+
+    # 1. Obtener el inventario real del usuario
+    with get_db() as conn:
+
+        rows = conn.execute(
+            """
+            SELECT ingredient_es, quantity, source
+            FROM fridge_items
+            WHERE user_id = ?
+            """,
+            (current_user["id"],)
+        ).fetchall()
+
+    inventory = [dict(row) for row in rows]
+
+    ingredients = [
+        item["ingredient_es"]
+        for item in inventory
+        if item["source"] != "pantry"
+    ]
+
+    # 2. Obtener recetas del recomendador existente
+    recipes = []
+
+    if ingredients:
+
+        recommendations = ml_engine.recommend(
+            ingredients=ingredients,
+            max_missing=3,
+            top_k=5,
+            category=None
+        )
+
+        for recipe in recommendations:
+
+            detail = ml_engine.get_recipe_detail(
+                recipe["recipe_id"]
+            ) or {}
+
+            recipes.append({
+                "title": recipe["title"],
+                "category": recipe["category"],
+                "match_pct": recipe["match_pct"],
+                "matched_ingredients":
+                    recipe["matched_ingredients"],
+                "missing_ingredients":
+                    recipe["missing_ingredients"],
+                "raw_ingredients":
+                    str(detail.get("raw_ingredients", ""))[:2000],
+                "instructions":
+                    str(recipe["instructions"])[:1500]
+            })
+
+    # 3. Preparar el historial de conversación
+    messages = [
+        message.model_dump()
+        for message in req.messages
+    ]
+
+    # 4. Enviar la información a Ollama
+    try:
+
+        result = generate_chat_response(
+            messages=messages,
+            ingredients=inventory,
+            recipes=recipes
+        )
+
+    except RuntimeError as exc:
+
+        raise HTTPException(
+            status_code=502,
+            detail=str(exc)
+        ) from exc
+
+    # 5. Devolver la respuesta al frontend
+    return {
+        "answer": result["answer"],
+        "model": result["model"],
+        "response_time": result["response_time"],
+        "ingredients_used": [
+            item["ingredient_es"]
+            for item in inventory
+        ],
+        "recipes_used": [
+            recipe["title"]
+            for recipe in recipes
+        ]
+    }
