@@ -21,7 +21,15 @@ dist/
 build/
 *.log
 
-# Dataset comprimido de gran tamaño
+# Datasets, modelos pesados y base de datos local
+data/
+*.zip
+*.pt
+*.db
+*.sqlite3
+*.parquet
+*.npz
+*.pkl
 fridge dataset.v1i.yolov8.zip
 
 # Archivos del sistema

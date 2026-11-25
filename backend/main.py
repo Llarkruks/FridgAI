@@ -42,14 +42,14 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title="Smart Fridge RAIA API",
-    description="Backend desacoplado de Visión por Computador (YOLOv8n) y Recomendación de Recetas (TF-IDF).",
-    version="1.0.0",
+    description="Backend desacoplado de Visión por Computador (YOLO11s) y Recomendación de Recetas (TF-IDF).",
+    version="1.1.0",
     lifespan=lifespan,
 )
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Permitir Unity y Streamlit en entorno local/red LAN
+    allow_origins=["*"],  # Permitir Unity, React y Streamlit en entorno local/red LAN
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -118,6 +118,10 @@ def login(form_data: OAuth2PasswordRequestForm = Depends()):
 async def recognize_ingredients(
     image: UploadFile = File(...),
     conf: float = Query(0.30, ge=0.05, le=0.95),
+    enhance: bool = Query(False, description="Aplicar mejora de iluminación CLAHE en espacio LAB"),
+    tta: bool = Query(False, description="Activar Test-Time Augmentation (multi-escala)"),
+    imgsz: int = Query(640, ge=320, le=640, description="Resolución de inferencia YOLO"),
+    log_scan: bool = Query(True, description="Guardar escaneo en el historial SQLite"),
     current_user: dict = Depends(get_current_user),
 ):
     if not image.content_type or not image.content_type.startswith("image/"):
@@ -130,16 +134,19 @@ async def recognize_ingredients(
         raise HTTPException(status_code=413, detail="La imagen supera el límite máximo de 5 MiB")
 
     try:
-        inference_ms, detected = ml_engine.recognize_image(raw_bytes, conf=conf)
+        inference_ms, detected = ml_engine.recognize_image(
+            raw_bytes, conf=conf, enhance=enhance, tta=tta, imgsz=imgsz
+        )
     except Exception as exc:
         raise HTTPException(status_code=400, detail=f"No se pudo procesar la imagen: {exc}")
 
-    # Auditoría en scan_logs para estadísticas reales
-    with get_db() as conn:
-        conn.execute(
-            "INSERT INTO scan_logs (user_id, detected_json, inference_ms) VALUES (?, ?, ?)",
-            (current_user["id"], json.dumps(detected, ensure_ascii=False), inference_ms),
-        )
+    # Auditoría en scan_logs (desactivable en modo Live para no saturar SQLite)
+    if log_scan:
+        with get_db() as conn:
+            conn.execute(
+                "INSERT INTO scan_logs (user_id, detected_json, inference_ms) VALUES (?, ?, ?)",
+                (current_user["id"], json.dumps(detected, ensure_ascii=False), inference_ms),
+            )
 
     return {"inference_ms": inference_ms, "detected_items": detected}
 

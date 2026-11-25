@@ -4,9 +4,10 @@ import pickle
 import time
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
+import cv2
 import numpy as np
 import pandas as pd
-from PIL import Image
+from PIL import Image, ImageOps
 from scipy import sparse
 from sklearn.metrics.pairwise import cosine_similarity
 from ultralytics import YOLO
@@ -81,7 +82,7 @@ class MLEngine:
         ]
         self._ing_sets = [set(lst) for lst in self.recipes_df["parsed_ingredients"].tolist()]
 
-        # 3. Modelo YOLOv8n en RAM
+        # 3. Modelo YOLO11s en RAM
         best_pt = ARTIFACTS_DIR / "best.pt"
         if not best_pt.exists():
             raise FileNotFoundError(
@@ -89,10 +90,41 @@ class MLEngine:
             )
         self.yolo_model = YOLO(str(best_pt))
 
-    def recognize_image(self, image_bytes: bytes, conf: float = 0.30) -> Tuple[float, List[dict]]:
-        img = Image.open(io.BytesIO(image_bytes)).convert("RGB")
+    @staticmethod
+    def _prepare_image(image_bytes: bytes, enhance: bool = False) -> Image.Image:
+        # Corrige rotación EXIF (clave para cámara web y futuras capturas desde móvil/Unity)
+        img = ImageOps.exif_transpose(Image.open(io.BytesIO(image_bytes))).convert("RGB")
+        if not enhance:
+            return img
+
+        # Mejora de contraste local (CLAHE) solo sobre luminancia (canal L en LAB)
+        # para recuperar detalle en webcams oscuras sin distorsionar colores reales
+        rgb = np.array(img)
+        lab = cv2.cvtColor(rgb, cv2.COLOR_RGB2LAB)
+        l_chan, a_chan, b_chan = cv2.split(lab)
+        clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+        l_enh = clahe.apply(l_chan)
+        rgb_enh = cv2.cvtColor(cv2.merge([l_enh, a_chan, b_chan]), cv2.COLOR_LAB2RGB)
+        return Image.fromarray(rgb_enh)
+
+    def recognize_image(
+        self,
+        image_bytes: bytes,
+        conf: float = 0.30,
+        enhance: bool = False,
+        tta: bool = False,
+        imgsz: int = 640,
+    ) -> Tuple[float, List[dict]]:
         t0 = time.perf_counter()
-        results = self.yolo_model.predict(img, conf=conf, verbose=False)
+        img = self._prepare_image(image_bytes, enhance=enhance)
+        results = self.yolo_model.predict(
+            source=img,
+            conf=conf,
+            iou=0.45,
+            imgsz=imgsz,
+            augment=tta,
+            verbose=False,
+        )
         elapsed_ms = round((time.perf_counter() - t0) * 1000, 2)
 
         detected: List[dict] = []
@@ -100,7 +132,7 @@ class MLEngine:
             names = results[0].names
             for box in results[0].boxes:
                 cls_en = names[int(box.cls[0])]
-                # Ignora las 4 clases excluidas (date, lamb, bulgur, okra)
+                # Ignora clases fuera del catálogo culinario mapeado
                 if cls_en not in self.yolo_to_es:
                     continue
                 confidence = round(float(box.conf[0]), 4)
